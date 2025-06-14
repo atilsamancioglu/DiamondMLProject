@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diamond Price Predictor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #2d2d2d 100%);
+            color: #ffffff;
+            font-family: 'Georgia', serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            border: 1px solid #333;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+        }
+        
+        h1 {
+            color: #e8e8e8;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 1;
+        }
+        
+        h1::before {
+            content: '💎';
+            margin-right: 15px;
+            font-size: 2rem;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+        }
+        
+        .form-label {
+            color: #d4d4d4;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .form-control, .form-select {
+            background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
+            border: 2px solid #444;
+            color: #ffffff;
+            border-radius: 10px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background: linear-gradient(145deg, #333, #2a2a2a);
+            border-color: #666;
+            box-shadow: 
+                inset 2px 2px 5px rgba(0,0,0,0.3),
+                0 0 15px rgba(255,255,255,0.1);
+            color: #ffffff;
+        }
+        
+        .form-control::placeholder {
+            color: #888;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(145deg, #4a4a4a, #2a2a2a);
+            border: 2px solid #555;
+            color: #ffffff;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 
+                0 8px 15px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            z-index: 10;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(145deg, #555, #333);
+            border-color: #666;
+            transform: translateY(-2px);
+            box-shadow: 
+                0 12px 20px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            display: none;
+            background: linear-gradient(145deg, #1a4a1a, #0d3d0d);
+            border: 2px solid #2d5a2d;
+            box-shadow: 
+                0 10px 20px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .result h4 {
+            color: #90ee90;
+            text-shadow: 0 0 10px rgba(144,238,144,0.3);
+            font-size: 1.8rem;
+        }
+        
+        .mb-3 {
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .row {
+            position: relative;
+            z-index: 1;
+        }
+        
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Diamond Price Predictor</h1>
+        <form id="predictionForm">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="carat" class="form-label"><i class="fas fa-weight"></i> Carat</label>
+                    <input type="number" step="0.01" class="form-control" id="carat" placeholder="e.g., 1.25" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="cut" class="form-label"><i class="fas fa-cut"></i> Cut</label>
+                    <select class="form-select" id="cut" required>
+                        <option value="Fair">Fair</option>
+                        <option value="Good">Good</option>
+                        <option value="Very Good">Very Good</option>
+                        <option value="Premium">Premium</option>
+                        <option value="Ideal">Ideal</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="color" class="form-label"><i class="fas fa-palette"></i> Color</label>
+                    <select class="form-select" id="color" required>
+                        <option value="D">D (Colorless)</option>
+                        <option value="E">E (Colorless)</option>
+                        <option value="F">F (Colorless)</option>
+                        <option value="G">G (Near Colorless)</option>
+                        <option value="H">H (Near Colorless)</option>
+                        <option value="I">I (Near Colorless)</option>
+                        <option value="J">J (Near Colorless)</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="clarity" class="form-label"><i class="fas fa-eye"></i> Clarity</label>
+                    <select class="form-select" id="clarity" required>
+                        <option value="I1">I1 (Included)</option>
+                        <option value="SI2">SI2 (Slightly Included)</option>
+                        <option value="SI1">SI1 (Slightly Included)</option>
+                        <option value="VS2">VS2 (Very Slightly Included)</option>
+                        <option value="VS1">VS1 (Very Slightly Included)</option>
+                        <option value="VVS2">VVS2 (Very Very Slightly Included)</option>
+                        <option value="VVS1">VVS1 (Very Very Slightly Included)</option>
+                        <option value="IF">IF (Internally Flawless)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="depth" class="form-label"><i class="fas fa-arrows-alt-v"></i> Depth (%)</label>
+                    <input type="number" step="0.01" class="form-control" id="depth" placeholder="e.g., 61.5" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="table" class="form-label"><i class="fas fa-table"></i> Table (%)</label>
+                    <input type="number" step="0.01" class="form-control" id="table" placeholder="e.g., 57.0" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="x" class="form-label"><i class="fas fa-ruler-horizontal"></i> Length (mm)</label>
+                    <input type="number" step="0.01" class="form-control" id="x" placeholder="e.g., 5.73" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="y" class="form-label"><i class="fas fa-ruler-vertical"></i> Width (mm)</label>
+                    <input type="number" step="0.01" class="form-control" id="y" placeholder="e.g., 5.76" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="z" class="form-label"><i class="fas fa-cube"></i> Depth (mm)</label>
+                    <input type="number" step="0.01" class="form-control" id="z" placeholder="e.g., 3.53" required>
+                </div>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-calculator"></i> Predict Diamond Price
+                </button>
+            </div>
+        </form>
+        <div id="result" class="result text-center">
+            <h4><i class="fas fa-dollar-sign"></i> Predicted Price: <span id="predictedPrice">$0</span></h4>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            console.log('Form submitted!');
+            
+            const formData = {
+                carat: parseFloat(document.getElementById('carat').value),
+                cut: document.getElementById('cut').value,
+                color: document.getElementById('color').value,
+                clarity: document.getElementById('clarity').value,
+                depth: parseFloat(document.getElementById('depth').value),
+                table: parseFloat(document.getElementById('table').value),
+                x: parseFloat(document.getElementById('x').value),
+                y: parseFloat(document.getElementById('y').value),
+                z: parseFloat(document.getElementById('z').value)
+            };
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                document.getElementById('predictedPrice').textContent = 
+                    new Intl.NumberFormat('en-US', { 
+                        style: 'currency', 
+                        currency: 'USD',
+                        maximumFractionDigits: 0 
+                    }).format(data.predicted_price);
+                document.getElementById('result').style.display = 'block';
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while making the prediction.');
+            }
+        });
+    </script>
+</body>
+</html> 
