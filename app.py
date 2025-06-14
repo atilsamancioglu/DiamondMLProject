@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
@@ -47,4 +48,7 @@ async def predict(features: DiamondFeatures):
     # Make prediction
     prediction = model.predict(input_scaled)[0]
     
-    return {"predicted_price": float(prediction)} 
+    return {"predicted_price": float(prediction)}
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=80)
